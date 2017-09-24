@@ -10,6 +10,13 @@ using namespace std;
 Улучшить форматирование при выводе
 */
 
+int A = 0;
+
+struct line
+{
+	char* str;
+	int len;
+};
 
 int n_str(char buf[], int size)  //вычисляет количество строк и заменяет '\n' на '\0' 
 {
@@ -24,29 +31,50 @@ int n_str(char buf[], int size)  //вычисляет количество строк и заменяет '\n' на
 	return n;
 }
 
-void fill_text(char buf[], char* text[], int size, int n) //заполняет массив text[]
+void fill_text(char buf[], line text[], int size, int n) //заполняет массив text[]
 {
-	text[0] = &buf[0];
-	for (int i = 1, j = 1; i < size && j <n; i++) {
+	text[0].str = &buf[0];
+	int sum_len = 0;
+	for (int i = 1, j = 1; i < size && j < n + 1; i++) {
 		if (buf[i] == '\0') {
-			text[j] = &buf[i] + 1;
-			printf("%d    ", j);
-			for (int e = 0; *(text[j] + e) != '\0'; e++) {
-				printf("%d", *(text[j] + e));
-			}
-			printf("\n");
+			text[j].str = &buf[i] + 1;
+			if (j == 1) 
+				text[j - 1].len = i;
+			else 
+				text[j - 1].len = i - sum_len;
+			sum_len += text[j - 1].len;
+			printf("%d    %s\n", j, text[j - 1].str);
 			j++;
 		}
 	}
+	printf("%d    %s\n", n, text[n-1].str);
 }
 
 int CompareStr(const void* left_0, const void* right_0)
 {
-	const char* left = *(char**)left_0;
-	const char* right = *(char**)right_0;
-	while (ispunct(*left) || isspace(*left)) left++;
-	while (ispunct(*right) || isspace(*right)) right++;
-	return strcmp(left, right);
+	extern int A;
+	A++;
+	
+	line left = *(line*)left_0;
+	line right = *(line*)right_0;
+	if (left.len == right.len) {
+		for (int i = 0, j = 0; i < left.len, j < right.len; i++, j++) {
+			while (ispunct(left.str[i]) || isspace(left.str[i])) {
+				i++;
+			}
+			while (ispunct(right.str[i]) || isspace(right.str[i])) {
+				j++;
+			}
+			if (left.str[i] != right.str[j]) 
+				printf("%d    %5s  :  %5s\n", A, left.str, right.str );
+				return (left.str[i] - right.str[j]);
+		}
+	}
+	else {
+		printf("%d    %5s  :  %5s\n", A, left.len, right.len);
+		return (left.len - right.len);
+	}
+	return 0;
 }
 
 void PrintBuf(char buf[], int size)
@@ -60,14 +88,15 @@ void PrintBuf(char buf[], int size)
 			t++;
 		}
 	}
+	printf("\n");
 }
 
-void PrintText(char* text[], int n)
+void PrintText(line text[], int n)
 {
 	for (int i = 0; i < n; i++) {
-		if (!isupper(*(text[i] + 2)) && *text[i] != '\0') //определение обычной строки (непустой и не заголовка)
+		if (!isupper(*(text[i].str + 2)) && (text[i].str != '\0')) //определение обычной строки (непустой и не заголовка)
 			printf("%d    ", i + 1);
-		puts(text[i]);
+		puts(text[i].str);
 	}
 }
 
@@ -86,10 +115,10 @@ int main()
 	fread(buf, 1, size, input);
 	int n = n_str(buf, size);
 	PrintBuf(buf, size);
-	char** text = (char**)calloc(n, sizeof(int));   //выделение памяти под массив указателей
+	line* text = (line*)calloc(n, sizeof(line));   //выделение памяти под массив указателей
 	if (text == NULL) return 3;
 	fill_text(buf, text, size, n);
-	qsort(text, n, sizeof(*text), CompareStr);
+	qsort(text, n, sizeof(line), CompareStr);
 	PrintText(text, n);
 	free(buf);
 	free(text);
