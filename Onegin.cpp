@@ -40,7 +40,6 @@ void fill_text(char buf[], line text[], int size, int n) //заполняет массив text
 	int sum_len = 0;
 	for (int i = 1, j = 1; i < size && j < n + 1; i++) {
 		if (buf[i] == '\0') {
-<<<<<<< HEAD
 			text[j].str = &buf[i] + 1;
 			if (j == 1)
 				text[j - 1].len = i;
@@ -48,31 +47,10 @@ void fill_text(char buf[], line text[], int size, int n) //заполняет массив text
 				text[j - 1].len = i - sum_len;
 			sum_len += text[j - 1].len;
 			printf("%d    %s\n", j, text[j - 1].str);
-//			
-//
-//			printf("%d    ", j);
-//			for (int e = 0; (text[j].str + e) != '\0'; e++) {
-//				printf("%c", (text[j].str + e));
-//			}
-//			printf("\n");
-=======
-			text[j] = &buf[i+1];
-			text[j] = &buf[i] + 1;
-			printf("%d    ", j+1);
-			for (int e = 0; *(text[j] + e) != '\0'; e++) {
-				printf("%c", *(text[j] + e));
-			}
-			printf("\n");
->>>>>>> master
 			j++;
 		}
 	}
-//	printf("%d    %s\n", n, text[n-1].str);
-	printf("%d    ", n);
-	for (int e = 0; (text[n - 1].str + e) != '\0'; e++) {
-		printf("%c", (text[n - 1].str + e));
-	}
-	printf("\n");
+	printf("%d    %s\n", n, text[n-1].str);
 }
 
 int CompareStr(const void* left_0, const void* right_0)
@@ -87,12 +65,12 @@ int CompareStr(const void* left_0, const void* right_0)
 			while ((ispunct(left.str[i])  || isspace(left.str[i]))  && left.str[i]  != '\0') i++;
 			while ((ispunct(right.str[i]) || isspace(right.str[i])) && right.str[i] != '\0') j++;
 			if (left.str[i] != right.str[j]) 
-				printf("%d    %d\n", A, left.str - right.str );
+				printf("%d    '%c'    %d\n", A, left.str[i], left.str[i] - right.str[j] );
 				return (left.str[i] - right.str[j]);
 		}
 	}
 	else {
-		printf("%d    %d\n", A, left.len - right.len);
+		printf("%d          %d\n", A, left.len - right.len);
 		return (left.len - right.len);
 	}
 	return 0;
