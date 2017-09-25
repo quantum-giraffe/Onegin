@@ -35,7 +35,6 @@ void fill_text(char buf[], char* text[], int size, int n) //заполняет массив tex
 	for (int i = 1, j = 1; i < size && j <n; i++) {
 		if (buf[i] == '\0') {
 			text[j] = &buf[i+1];
-//			printf("%d    %s\n", j, *text[j]);
 			text[j] = &buf[i] + 1;
 			printf("%d    ", j+1);
 			for (int e = 0; *(text[j] + e) != '\0'; e++) {
