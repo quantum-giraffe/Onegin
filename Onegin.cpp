@@ -11,16 +11,21 @@ using namespace std;
 */
 
 
-int n_str(char buf[], int size)  //вычисл€ет количество строк и замен€ет '\n' на '\0' 
+int n_str(char buf[], int& size)  //вычисл€ет количество строк и замен€ет '\n' на '\0' 
 {
 	int n = 1;
-	for (int i = 0; i < size; i++) {
+	int i = 0;
+	for (int q = 0; q < size; i++, q++) {
 		if (buf[i] == '\n') {
 			buf[i] = '\0';
+			q++;
 			if (buf[i + 1])
 				n++;
 		}
 	}
+	buf[i-1] = '\0';
+	buf[i] = EOF;
+	size = i - 1;
 	return n;
 }
 
@@ -29,10 +34,12 @@ void fill_text(char buf[], char* text[], int size, int n) //заполн€ет массив tex
 	text[0] = &buf[0];
 	for (int i = 1, j = 1; i < size && j <n; i++) {
 		if (buf[i] == '\0') {
+			text[j] = &buf[i+1];
+//			printf("%d    %s\n", j, *text[j]);
 			text[j] = &buf[i] + 1;
-			printf("%d    ", j);
+			printf("%d    ", j+1);
 			for (int e = 0; *(text[j] + e) != '\0'; e++) {
-				printf("%d", *(text[j] + e));
+				printf("%c", *(text[j] + e));
 			}
 			printf("\n");
 			j++;
@@ -76,15 +83,14 @@ int main()
 	FILE * input = fopen("Hamlet.txt", "r");
 	if (!input) return 1;
 	fseek(input, 0, SEEK_END);
-	int size = ftell(input) + 1;  //выдел€етс€ пам€ть на 5590 €чеек больше, чем должно. 5590 - это ровно количество строк
-	printf("%d", size);      //видимо, это '\r' . Ќадо как-то избавл€тьс€ от них на стадии подсчета символов
-	size = 175090;
-	printf("%d", size);
+	int size = ftell(input) + 1; 
+	printf("%d\n", size); 
 	char* buf = (char*)calloc(size, sizeof(char)); //выделение пам€ти под буфер
 	if (buf == NULL) return 2;
 	rewind(input);
 	fread(buf, 1, size, input);
 	int n = n_str(buf, size);
+	printf("%d\n%d\n", size, n);
 	PrintBuf(buf, size);
 	char** text = (char**)calloc(n, sizeof(int));   //выделение пам€ти под массив указателей
 	if (text == NULL) return 3;
