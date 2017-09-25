@@ -16,16 +16,21 @@ struct line
 	int len;
 };
 
-int n_str(char buf[], int size)  //вычисляет количество строк и заменяет '\n' на '\0' 
+int n_str(char buf[], int& size)  //вычисляет количество строк и заменяет '\n' на '\0' 
 {
 	int n = 1;
-	for (int i = 0; i < size; i++) {
+	int i = 0;
+	for (int q = 0; q < size; i++, q++) {
 		if (buf[i] == '\n') {
 			buf[i] = '\0';
+			q++;
 			if (buf[i + 1])
 				n++;
 		}
 	}
+	buf[i-1] = '\0';
+	buf[i] = EOF;
+	size = i - 1;
 	return n;
 }
 
@@ -35,6 +40,7 @@ void fill_text(char buf[], line text[], int size, int n) //заполняет массив text
 	int sum_len = 0;
 	for (int i = 1, j = 1; i < size && j < n + 1; i++) {
 		if (buf[i] == '\0') {
+<<<<<<< HEAD
 			text[j].str = &buf[i] + 1;
 			if (j == 1)
 				text[j - 1].len = i;
@@ -49,6 +55,15 @@ void fill_text(char buf[], line text[], int size, int n) //заполняет массив text
 //				printf("%c", (text[j].str + e));
 //			}
 //			printf("\n");
+=======
+			text[j] = &buf[i+1];
+			text[j] = &buf[i] + 1;
+			printf("%d    ", j+1);
+			for (int e = 0; *(text[j] + e) != '\0'; e++) {
+				printf("%c", *(text[j] + e));
+			}
+			printf("\n");
+>>>>>>> master
 			j++;
 		}
 	}
@@ -111,15 +126,14 @@ int main()
 	FILE * input = fopen("Hamlet.txt", "r");
 	if (!input) return 1;
 	fseek(input, 0, SEEK_END);
-	int size = ftell(input) + 1;  //выделяется память на 5590 ячеек больше, чем должно. 5590 - это ровно количество строк
-	printf("%d", size);      //видимо, это '\r' . Надо как-то избавляться от них на стадии подсчета символов
-	size = 175090;
-	printf("%d", size);
+	int size = ftell(input) + 1; 
+	printf("%d\n", size); 
 	char* buf = (char*)calloc(size, sizeof(char)); //выделение памяти под буфер
 	if (buf == NULL) return 2;
 	rewind(input);
 	fread(buf, 1, size, input);
 	int n = n_str(buf, size);
+	printf("%d\n%d\n", size, n);
 	PrintBuf(buf, size);
 	line* text = (line*)calloc(n, sizeof(line));   //выделение памяти под массив указателей
 	if (text == NULL) return 3;
