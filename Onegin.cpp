@@ -5,8 +5,6 @@
 using namespace std;
 
 /*
-Надо научиться правильно измерять размер вводимого файла (не считать '\r') [может EOF?]
-Создать Структуру
 Улучшить форматирование при выводе
 */
 
@@ -38,16 +36,28 @@ void fill_text(char buf[], line text[], int size, int n) //заполняет массив text
 	for (int i = 1, j = 1; i < size && j < n + 1; i++) {
 		if (buf[i] == '\0') {
 			text[j].str = &buf[i] + 1;
-			if (j == 1) 
+			if (j == 1)
 				text[j - 1].len = i;
-			else 
+			else
 				text[j - 1].len = i - sum_len;
 			sum_len += text[j - 1].len;
 			printf("%d    %s\n", j, text[j - 1].str);
+//			
+//
+//			printf("%d    ", j);
+//			for (int e = 0; (text[j].str + e) != '\0'; e++) {
+//				printf("%c", (text[j].str + e));
+//			}
+//			printf("\n");
 			j++;
 		}
 	}
-	printf("%d    %s\n", n, text[n-1].str);
+//	printf("%d    %s\n", n, text[n-1].str);
+	printf("%d    ", n);
+	for (int e = 0; (text[n - 1].str + e) != '\0'; e++) {
+		printf("%c", (text[n - 1].str + e));
+	}
+	printf("\n");
 }
 
 int CompareStr(const void* left_0, const void* right_0)
