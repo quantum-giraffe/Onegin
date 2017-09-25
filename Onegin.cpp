@@ -59,19 +59,15 @@ int CompareStr(const void* left_0, const void* right_0)
 	line right = *(line*)right_0;
 	if (left.len == right.len) {
 		for (int i = 0, j = 0; i < left.len, j < right.len; i++, j++) {
-			while (ispunct(left.str[i]) || isspace(left.str[i])) {
-				i++;
-			}
-			while (ispunct(right.str[i]) || isspace(right.str[i])) {
-				j++;
-			}
+			while ((ispunct(left.str[i])  || isspace(left.str[i]))  && left.str[i]  != '\0') i++;
+			while ((ispunct(right.str[i]) || isspace(right.str[i])) && right.str[i] != '\0') j++;
 			if (left.str[i] != right.str[j]) 
-				printf("%d    %5s  :  %5s\n", A, left.str, right.str );
+				printf("%d    %d\n", A, left.str - right.str );
 				return (left.str[i] - right.str[j]);
 		}
 	}
 	else {
-		printf("%d    %5s  :  %5s\n", A, left.len, right.len);
+		printf("%d    %d\n", A, left.len - right.len);
 		return (left.len - right.len);
 	}
 	return 0;
