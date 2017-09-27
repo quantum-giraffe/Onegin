@@ -1,17 +1,19 @@
 #include <iostream>
 #include <cstdio>
+#include <cstdlib>
 #pragma warning(disable : 4996)
 
 using namespace std;
 
-/*
-Ќадо научитьс€ правильно измер€ть размер вводимого файла (не считать '\r') [может EOF?]
-—оздать —труктуру
-”лучшить форматирование при выводе
-*/
+//int A = 0;
 
+struct line
+{
+	char* str;
+	int len = 0;
+};
 
-int n_str(char buf[], int& size)  //вычисл€ет количество строк и замен€ет '\n' на '\0' 
+int n_str(char buf[], int& size)  //вычисл€ет количество строк, пересчитывает количество символов, замен€ет '\n' на '\0' 
 {
 	int n = 1;
 	int i = 0;
@@ -29,30 +31,46 @@ int n_str(char buf[], int& size)  //вычисл€ет количество строк и замен€ет '\n' н
 	return n;
 }
 
-void fill_text(char buf[], char* text[], int size, int n) //заполн€ет массив text[]
+void fill_text(char buf[], line text[], int size, int n) //заполн€ет массив text[]
 {
-	text[0] = &buf[0];
-	for (int i = 1, j = 1; i < size && j <n; i++) {
+	text[0].str = &buf[0];
+	int sum_len = 0;
+	for (int i = 1, j = 1; i < size && j < n + 1; i++) {
 		if (buf[i] == '\0') {
-			text[j] = &buf[i+1];
-			text[j] = &buf[i] + 1;
-			printf("%d    ", j+1);
-			for (int e = 0; *(text[j] + e) != '\0'; e++) {
-				printf("%c", *(text[j] + e));
-			}
-			printf("\n");
+			text[j].str = &buf[i] + 1;
+			if (j == 1)
+				text[j - 1].len = i;
+			else
+				text[j - 1].len = i - sum_len;
+			sum_len += text[j - 1].len;
+//			printf("%d    %s\n", j, text[j - 1].str);
 			j++;
 		}
 	}
+//	printf("%d    %s\n", n, text[n-1].str);
 }
 
 int CompareStr(const void* left_0, const void* right_0)
 {
-	const char* left = *(char**)left_0;
-	const char* right = *(char**)right_0;
-	while (ispunct(*left) || isspace(*left)) left++;
-	while (ispunct(*right) || isspace(*right)) right++;
-	return strcmp(left, right);
+//	extern int A;
+//	A++;
+	
+	line left = *(line*)left_0;
+	line right = *(line*)right_0;
+	if (left.len == right.len) {
+		for (int i = 0, j = 0; i < left.len, j < right.len; i++, j++) {
+			while ((ispunct(left.str[i])  || isspace(left.str[i]))  && left.str[i]  != '\0') i++;
+			while ((ispunct(right.str[j]) || isspace(right.str[j])) && right.str[j] != '\0') j++;
+			if (left.str[i] != right.str[j]) 
+//				printf("%d    '%c'    %d\n", A, left.str[i], left.str[i] - right.str[j] );
+				return (left.str[i] - right.str[j]);
+		}
+	}
+	else {
+//		printf("%d            %d\n", A, left.len - right.len);
+		return (left.len - right.len);
+	}
+	return 0;
 }
 
 void PrintBuf(char buf[], int size)
@@ -66,14 +84,17 @@ void PrintBuf(char buf[], int size)
 			t++;
 		}
 	}
+	printf("\n");
 }
 
-void PrintText(char* text[], int n)
+void PrintText(line text[], int n)
 {
 	for (int i = 0; i < n; i++) {
-		if (!isupper(*(text[i] + 2)) && *text[i] != '\0') //определение обычной строки (непустой и не заголовка)
+//		if (!isupper(*(text[i].str + 2)) && (!isspace(*text[i].str))) //определение обычной строки (непустой и не заголовка)
+//		{
 			printf("%d    ", i + 1);
-		puts(text[i]);
+			puts(text[i].str);
+//		}
 	}
 }
 
@@ -83,18 +104,18 @@ int main()
 	if (!input) return 1;
 	fseek(input, 0, SEEK_END);
 	int size = ftell(input) + 1; 
-	printf("%d\n", size); 
+//	printf("%d\n", size); 
 	char* buf = (char*)calloc(size, sizeof(char)); //выделение пам€ти под буфер
 	if (buf == NULL) return 2;
 	rewind(input);
 	fread(buf, 1, size, input);
 	int n = n_str(buf, size);
-	printf("%d\n%d\n", size, n);
-	PrintBuf(buf, size);
-	char** text = (char**)calloc(n, sizeof(int));   //выделение пам€ти под массив указателей
+//	printf("%d\n%d\n", size, n);
+//	PrintBuf(buf, size);
+	line* text = (line*)calloc(n, sizeof(line));   //выделение пам€ти под массив указателей
 	if (text == NULL) return 3;
 	fill_text(buf, text, size, n);
-	qsort(text, n, sizeof(*text), CompareStr);
+	qsort(text, n, sizeof(line), CompareStr);
 	PrintText(text, n);
 	free(buf);
 	free(text);
