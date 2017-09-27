@@ -5,6 +5,8 @@
 
 using namespace std;
 
+/* ѕлохо работает проверка строк на нормальность */
+
 //int A = 0;
 
 struct line
